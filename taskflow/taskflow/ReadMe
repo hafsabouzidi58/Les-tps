@@ -1,0 +1,26 @@
+Q1 : Pourquoi <Navigate /> (composant) et pas navigate() (hook) ici ?
+R1 : Le composant <Navigate /> est utilisé pour les redirections déclaratives lors du rendu (dans le JSX). Le hook navigate() est utilisé pour des redirections impératives (après une action, comme un clic ou une soumission de formulaire)
+
+
+Q2 : Quelle différence entre navigate(from) et navigate(from, { replace: true }) ?
+R2 : replace: true remplace l'entrée actuelle dans l'historique au lieu d'en ajouter une nouvelle. Cela empêche l'utilisateur de revenir à la page de login via le bouton "Retour" du navigateur après s'être connecté.
+
+
+Q3 : Après un POST, pourquoi fait-on setProjects(prev => [...prev, data]) plutôt qu’un re-fetch GET ?
+R3 : Pour l'optimisation et l'expérience utilisateur (UX). Cela évite une requête réseau supplémentaire (GET) et permet une mise à jour instantanée de l'interface en utilisant les données déjà renvoyées par le serveur lors du POST
+
+
+Q5 : Quelle différence entre <Link> et <NavLink> ? Pourquoi NavLink ici ?
+R5 : <NavLink> est une version spéciale de <Link> qui sait si elle est "active". Elle permet d'appliquer automatiquement une classe CSS (.active) au lien correspondant à l'URL actuelle.
+
+
+Q6 : Ce composant sert pour le POST ET le PUT. Qu’est-ce qui change entre les deux usages ?
+R6 : Pour le POST, on passe des valeurs initiales vides. Pour le PUT (édition), on passe les données du projet existant (initialName, initialColor) pour pré-remplir le formulaire.
+
+
+Q7 : Arrêtez json-server et tentez un POST. Le message s’affiche ?
+R7 : Le bloc catch interceptera l'erreur réseau et affichera un message du type "Erreur réseau" ou "Erreur 500" via le state error
+
+
+Q8 : Avec fetch, un 404 ne lance PAS d’erreur. Avec Axios, que se passe-t-il ?
+R8 : Contrairement à fetch, Axios considère tout code de statut  (comme un 404 ou 500) comme une erreur et déclenche automatiquement le bloc catch
