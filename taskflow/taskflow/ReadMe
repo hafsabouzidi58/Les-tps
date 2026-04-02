@@ -1,3 +1,5 @@
+TP 3 
+
 Q1 : Pourquoi <Navigate /> (composant) et pas navigate() (hook) ici ?
 R1 : Le composant <Navigate /> est utilisé pour les redirections déclaratives lors du rendu (dans le JSX). Le hook navigate() est utilisé pour des redirections impératives (après une action, comme un clic ou une soumission de formulaire)
 
@@ -24,3 +26,92 @@ R7 : Le bloc catch interceptera l'erreur réseau et affichera un message du type
 
 Q8 : Avec fetch, un 404 ne lance PAS d’erreur. Avec Axios, que se passe-t-il ?
 R8 : Contrairement à fetch, Axios considère tout code de statut  (comme un 404 ou 500) comme une erreur et déclenche automatiquement le bloc catch
+
+
+
+
+
+
+
+
+
+
+
+TP 4 :
+
+
+
+Q1:Combien de lignes de CSS avez-vous écrit pour le Header MUI ? Comparez avec votre Header.module.css.
+R1:Le style est géré directement via la prop sx={{ ... }} sur les composants. En comparaison, un Header.module.css classique nécessite généralement plusieurs dizaines de lignes pour gérer le flexbox, les alignements et les couleurs
+
+
+Q2:Comparez le code du Header MUI vs Bootstrap. Lequel est plus lisible ? Plus court ?
+R2: MUI est très descriptif , Bootstrap : Le code est souvent plus court car Bootstrap regroupe plus de comportements par défaut dans un seul composant.
+
+
+Q3:Le Login MUI utilise sx={{}} pour le style. Le Login Bootstrap utilise des classes CSS (className). Quel système préférez-vous ? Pourquoi ?
+R3: Bootstrap car la Séparation plus nette entre la structure (JSX) et le style, classes réutilisables et standards
+
+
+
+
+Critère                |        Material UI               |          React-Bootstrap
+_________________________________________________________________________________________________
+Installation           | npm install @mui/material        | npm install react-bootstrap 
+                       | @emotion/react @emotion/styled   |     bootstrap
+                       |  @mui/icons-material             |
+_________________________________________________________________________________________________
+Nombre de composants   | Box,Card,CardContent,TextField,  |Container, Card, Form, Button,
+utilisés               |  Button,Typography,Alert         |Alert
+_________________________________________________________________________________________________
+Système de style       | sx                               | Classes Bootstrap
+_________________________________________________________________________________________________
+Personnalisation       | avec sx                          | avec style 
+couleurs               
+_________________________________________________________________________________________________
+Responsive             | Géré avec Box flex et fullWidth  | Géré avec classes Bootstrap (d-flex)
+_________________________________________________________________________________________________
+Lisibilité du code     | structuré                        | simple                               
+_________________________________________________________________________________________________
+Documentation          | complète                         | facile à comprendre
+_________________________________________________________________________________________________
+Votre préférence       |                                  |      *****************                       _________________________________________________________________________________________________
+
+
+Q4:Si vous deviez choisir UNE seule library pour TaskFlow en production, laquelle et pourquoi ?
+R4: Material UI car il est souvent privilégié pour des applications complexes
+
+
+PARTIE 6 :
+
+a) Firebase : React --> Firebase SDK (Firestore/Auth) --> Cloud de Google
+b) Express + MongoDB : React --> API REST (Express/Node.js) --> Driver MongoDB --> Base de données MongoDB
+
+Q5:Pourquoi React ne peut-il PAS se connecter directement à MySQL ?
+R5:Pour des raisons de sécurité
+
+
+Q6:json-server est parfait pour notre TP. Donnez 3 raisons pour lesquelles on ne l’utiliserait PAS en production.
+R6:
+-Aucune gestion réelle des permissions ou de l'authentification robuste.
+-C'est un simple fichier JSON
+-Pas de gestion des transactions
+
+
+Q7:Firebase permet à React de se connecter directement (pas de backend Express). Comment est-ce possible alors que MySQL ne le permet pas ?
+R7:Firebase agit comme un "Backend as a Service" (BaaS). Il fournit une couche de sécurité intermédiaire (Security Rules) gérée par Google. Le SDK Firebase gère l'authentification et les autorisations de manière sécurisée directement depuis le client, ce qu'un serveur MySQL standard ne sait pas faire nativement.
+
+Q8:Votre TaskFlow utilise json-server. Un client vous demande de passer en production avec de vrais utilisateurs. Quelles étapes sont nécessaires ?
+R8:
+-Remplacer json-server par un vrai backend (Node/Express).
+-Migrer les données vers une vraie base de données.
+-Sécuriser les routes API (JWT, sessions).
+-Héberger le front et le back.
+
+
+Q9:MUI et Bootstrap sont des libraries externes. Quel est le risque d’en dépendre ?
+R9: Mises à jour
+
+
+Q10:Vous devez créer une app de chat en temps réel. json-server, Firebase ou Backend custom ? Justifiez
+R10:Firebase est le meilleur choix ici car il propose nativement des "Realtime Database" ou "Firestore listeners" qui synchronisent les données instantanément sans avoir à configurer des WebSockets manuellement
