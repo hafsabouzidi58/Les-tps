@@ -115,3 +115,61 @@ R9: Mises à jour
 
 Q10:Vous devez créer une app de chat en temps réel. json-server, Firebase ou Backend custom ? Justifiez
 R10:Firebase est le meilleur choix ici car il propose nativement des "Realtime Database" ou "Firestore listeners" qui synchronisent les données instantanément sans avoir à configurer des WebSockets manuellement
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+TP 5 : 
+
+
+R1 : Non, le script ne s’exécute pas. React échappe automatiquement les strings dans le JSX, donc le HTML est affiché comme du texte brut et non interprété.
+
+R2 : Cette fois, le script s’exécute (le alert("HACK") se déclenche) car dangerouslySetInnerHTML désactive la protection de React contre le XSS.
+
+R3 : Oui, on voit le header Authorization: Bearer ... dans la requête si le token est bien ajouté via l’intercepteur Axios.
+
+R4 : Parce que localStorage est accessible par n’importe quel script JavaScript (risque XSS), alors que le state React est temporaire et plus sécurisé.
+
+R5 : Plus de switch/case → remplacé par des reducers dans createSlice
+Plus besoin de définir les type d’actions manuellement → générés automatiquement
+Plus besoin de gérer l’immutabilité avec le spread (...) → Redux Toolkit utilise Immer (on peut écrire comme si on modifiait directement le state)
+
+R6 : Tous les composants enfants se re-rendent (Sidebar, MainContent, etc.).
+Ceux qui ne devraient pas se re-render : MainContent (car ses props n’ont pas changé).
+
+R7 : MainContent ne se re-rend plus grâce à React.memo.
+React.memo compare les props (shallow comparison) : si elles ne changent pas → pas de re-render.
+
+R8 : La fonction onRename={(p) => renameProject(p)} est recréée à chaque render.
+Donc React.memo détecte un changement de props → Sidebar se re-render quand même.
+
+R9 : useMemo → mémorise une valeur calculée
+useCallback → mémorise une fonction
+Utilisation :
+useMemo : quand tu veux éviter de recalculer une valeur coûteuse
+useCallback : quand tu passes une fonction en props (éviter les re-renders inutiles)
+
+R10 : Toggle sidebar :
+→ Avant : Sidebar + MainContent + autres composants se re-rendent
+→ Après : seulement Sidebar (MainContent optimisé avec React.memo)
+→ Temps réduit, moins de re-renders inutiles
+Ajouter un projet :
+→ Re-render de Dashboard + Sidebar (liste projets)
+→ Normal (state changé)
+Navigation vers ProjectDetail :
+→ Re-render des composants liés à la route
+→ Normal
+Logout :
+→ Re-render global (changement auth)
+→ Normal

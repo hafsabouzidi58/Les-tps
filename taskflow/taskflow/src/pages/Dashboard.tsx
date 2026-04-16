@@ -1,125 +1,36 @@
-import { useState, useEffect } from "react";
-import { useAuth } from "../features/auth/AuthContext";
-import api from "../api/axios";
+import { useState } from "react";
 import HeaderMUI from "../components/HeaderMUI";
 import Sidebar from "../components/Sidebar";
 import MainContent from "../components/MainContent";
 import ProjectForm from "../components/ProjectForm";
 import styles from "./Dashboard.module.css";
-import axios from 'axios';
 
-interface Project {
-  id: string;
-  name: string;
-  color: string;
-}
 
-interface Column {
-  id: string;
-  title: string;
-  tasks: string[];
-}
+import { useSelector, useDispatch } from "react-redux";
+import type { RootState } from "../store"; 
+import { logout } from "../features/auth/authSlice";
+import useProjects from '../hooks/useProjects'; 
 
 export default function Dashboard() {
-  const { state: authState, dispatch } = useAuth();
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [columns, setColumns] = useState<Column[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
+  const dispatch = useDispatch();
+  const { user } = useSelector((state: RootState) => state.auth);
   
-  // États pour la gestion d'erreurs et sauvegarde
-  const [error, setError] = useState<string | null>(null); 
-  const [saving, setSaving] = useState(false);
+  
+  const { 
+    projects, 
+    columns, 
+    loading, 
+    error, 
+    addProject, 
+    renameProject, 
+    deleteProject 
+  } = useProjects();
 
-  // GET — Charger les données au montage
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const [projRes, colRes] = await Promise.all([
-          api.get("/projects"),
-          api.get("/columns"),
-        ]);
-        setProjects(projRes.data);
-        setColumns(colRes.data);
-      } catch (e) {
-        console.error(e);
-        setError("Erreur lors du chargement des données.");
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchData();
-  }, []);
+  
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [showForm, setShowForm] = useState(false);
 
-  // POST — Ajouter un projet
-  async function addProject(name: string, color: string) {
-    setSaving(true);
-    setError(null);
-    try {
-      const { data } = await api.post("/projects", { name, color });
-      setProjects((prev) => [...prev, data]);
-      setShowForm(false); // On ferme le formulaire uniquement si succès
-    } catch (err) {
-      if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.message || `Erreur ${err.response?.status}`);
-      } else {
-        setError("Erreur inconnue");
-      }
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  // PUT — Renommer un projet
-  async function renameProject(project: Project) {
-  const newName = prompt("Nouveau nom :", project.name);
-
-  if (newName && newName.trim() !== "" && newName !== project.name) {
-    setSaving(true); // Active l'état de chargement
-    setError(null);  // Réinitialise les erreurs précédentes
-    try {
-      const { data } = await api.put(`/projects/${project.id}`, {
-        ...project,
-        name: newName,
-      });
-
-      setProjects((prev) =>
-        prev.map((p) => (p.id === project.id ? data : p)),
-      );
-    } catch (err) {
-      if (axios.isAxiosError(err)) {
-        setError(`Échec du renommage : ${err.response?.statusText || "Erreur serveur"}`);
-      } else {
-        setError("Erreur inconnue lors du renommage");
-      }
-    } finally {
-      setSaving(false); // Désactive l'état de chargement
-    }
-  }
-}
-
-  // DELETE — Supprimer un projet
- async function deleteProject(id: string) {
-  if (window.confirm("Êtes-vous sûr de vouloir supprimer ce projet ?")) {
-    setSaving(true);
-    setError(null);
-    try {
-      await api.delete(`/projects/${id}`);
-      
-      // Mise à jour locale uniquement après succès de l'API
-      setProjects((prev) => prev.filter((p) => p.id !== id));
-    } catch (err) {
-      if (axios.isAxiosError(err)) {
-        setError("Impossible de supprimer le projet. Le serveur est peut-être injoignable.");
-      } else {
-        setError("Une erreur est survenue lors de la suppression.");
-      }
-    } finally {
-      setSaving(false);
-    }
-  }
-}
+  const dangerousName = '<img src=x onerror=alert("HACK")>';
 
   if (loading) return <div className={styles.loading}>Chargement...</div>;
 
@@ -128,9 +39,10 @@ export default function Dashboard() {
       <HeaderMUI
         title="TaskFlow"
         onMenuClick={() => setSidebarOpen((p) => !p)}
-        userName={authState.user?.name}
-        onLogout={() => dispatch({ type: "LOGOUT" })}
+        userName={user?.name}
+        onLogout={() => dispatch(logout())}
       />
+
       <div className={styles.body}>
         <Sidebar
           projects={projects}
@@ -138,27 +50,33 @@ export default function Dashboard() {
           onRename={renameProject}
           onDelete={deleteProject}
         />
+
         <div className={styles.content}>
           <div className={styles.toolbar}>
-            {/* Affichage de l’erreur si elle existe */}
             {error && <div className={styles.error}>{error}</div>}
+            
+            <div dangerouslySetInnerHTML={{ __html: dangerousName }} />
 
             {!showForm ? (
               <button
                 className={styles.addBtn}
                 onClick={() => setShowForm(true)}
-                disabled={saving}
               >
-                {saving ? "Chargement..." : "+ Nouveau projet"}
+                + Nouveau projet
               </button>
             ) : (
               <ProjectForm
-                submitLabel={saving ? "Envoi..." : "Créer"}
-                onSubmit={addProject}
+                submitLabel="Créer"
+                onSubmit={async (name, color) => {
+                  await addProject(name, color);
+                  setShowForm(false); // Ferme le formulaire après ajout
+                }}
                 onCancel={() => setShowForm(false)}
               />
             )}
           </div>
+
+          {/* MainContent est mémoïsé, il ne re-rendra que si columns change */}
           <MainContent columns={columns} />
         </div>
       </div>
