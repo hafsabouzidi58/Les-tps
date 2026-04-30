@@ -36,11 +36,6 @@
       "color": "#2ecc71"
     },
     {
-      "id": "f3e6",
-      "name": "testtt",
-      "color": "#3498db"
-    },
-    {
       "id": "a86e",
       "name": "hghghg",
       "color": "#3498db"
@@ -71,5 +66,6 @@
         "Config ESLint"
       ]
     }
-  ]
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }
